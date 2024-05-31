@@ -1,1 +1,2 @@
 from .login_form import LoginForm
+from .add_new_field_condition import AddNewFieldConditionForm

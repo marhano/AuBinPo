@@ -4,19 +4,19 @@ from ..widgets.radio_widget import RadioWidget
 class LoginForm:
     def __init__(self, stdscr):
         self.stdscr = stdscr
-        self.cursor_x = 15
-        self.cursor_y = 4
+        self.cursor_x = 0
+        self.cursor_y = 4   
         self.username = ""
         self.password = ""
 
     def draw_form(self):
         self.stdscr.clear()
 
-        self.stdscr.addstr(2, 10, "LOGIN FORM")
-        self.stdscr.addstr(4, 5, "Username:")
-        self.stdscr.addstr(5, 5, "Password:")
-        self.stdscr.addstr(4, 15, self.username)
-        self.stdscr.addstr(5, 15, "*" * len(self.password))
+        self.stdscr.addstr(2, 0, "Login")
+        self.stdscr.addstr(4, 0, "Username:")
+        self.stdscr.addstr(5, 0, "Password:")
+        self.stdscr.addstr(4, 0, self.username)
+        self.stdscr.addstr(5, 0, "*" * len(self.password))
 
         self.stdscr.refresh()
 

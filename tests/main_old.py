@@ -5,6 +5,7 @@ from selenium.common.exceptions import NoSuchElementException
 import tkinter as tk
 from tkinter import messagebox
 import re
+from progress.bar import Bar
 
 def handle_login():
     # Open the webpage
@@ -75,9 +76,11 @@ def update_rules_gui():
     clear_rules_gui()
 
 def handle_process_rules():
+    total_items = len(reference_obj)
+    bar = Bar('Processing', max=total_items, fill='█', suffix='%(percent)d%%', check_tty=False, color='green', suffix_colors={'percent': 'green'}, title_width=20)
     for key, value in reference_obj.items():
         try:
-
+            bar.next()
             numeric_part = re.search(r'\d+', entry_ref_id.get()).group()
             non_numeric_part = re.search(r'\D+', entry_ref_id.get()).group()
             ref_name = "Ref#" + numeric_part
@@ -139,41 +142,45 @@ def handle_process_rules():
                 driver.find_element(By.NAME, "add_rule").click()
 
 
-            # add_new_condition_set = driver.find_element(By.NAME, "add_rule_link")
-            # add_new_condition_set.click()
+            add_new_condition_set = driver.find_element(By.NAME, "add_rule_link")
+            add_new_condition_set.click()
 
-            # driver.implicitly_wait(1)
+            driver.implicitly_wait(1)
 
             
-            # rule_name = driver.find_element(By.ID, "rule_name")
-            # rule_name.send_keys(rule_ref_name)
+            rule_name = driver.find_element(By.ID, "rule_name")
+            rule_name.send_keys(rule_ref_name)
 
-            # # CHECKBOXES
-            # driver.find_element(By.ID, "for_fields_rights").click()
-            # driver.find_element(By.ID, "for_workflow").click()
-            # driver.find_element(By.ID, "for_sla").click()
+            # CHECKBOXES
+            driver.find_element(By.ID, "for_fields_rights").click()
+            driver.find_element(By.ID, "for_workflow").click()
+            driver.find_element(By.ID, "for_sla").click()
 
-            # # REFERENCE NUMBER ID
-            # xpath_expression =  f"//input[@value='{entry_ref_id.get()}']"
-            # checkbox_ref = driver.find_element(By.XPATH, xpath_expression)
-            # checkbox_ref.click()
-            # parent_element = checkbox_ref.find_element(By.XPATH, "./ancestor::tr")
-            # print(parent_element)
-            # parent_element.find_element(By.XPATH, ".//input[contains(@id,'equal_checkbox')]").click()
+            # REFERENCE NUMBER ID
+            threats_that_can_lead_to = driver.find_element(By.XPATH, f"//input[contains(@value, 'threats_that_can_lead_to__{numeric_part}')]")
+            threats_that_can_lead_to.click()
+            threats_that_can_lead_to.find_element(By.XPATH, f"ancestor::tr//select[@class='form-control']/option[text()='{value['threats_that_can_lead_to']}']").click()
 
-            # parent_element.find_element(By.XPATH, ".//input[contains(@id,'input_equal')]").send_keys(reference_number)
+            supporting_assets = driver.find_element(By.XPATH, f"//input[contains(@value, 'supporting_assets_{numeric_part}')]")
+            supporting_assets.click()
+            supporting_assets.find_element(By.XPATH, f"ancestor::tr//select[@class='form-control']/option[text()='{value['supporting_assets']}']").click()
 
-            # # FOR TRIGGER
-            # driver.find_element(By.ID, "for_trigger").click()
+            actions = driver.find_element(By.XPATH, f"//input[contains(@value, 'actions_{numeric_part}')]")
+            actions.click()
+            actions.find_element(By.XPATH, f"ancestor::tr//select[@class='form-control']/option[text()='{value['actions']}']").click()
 
-            # # SAVE
-            # driver.find_element(By.NAME, "add_rule").click()
+            # FOR TRIGGER
+            driver.find_element(By.ID, "for_trigger").click()
+
+            # SAVE
+            driver.find_element(By.NAME, "add_rule").click()
 
         except NoSuchElementException as e:
             messagebox.showerror("Error", "Reference ID not found!")
             print(e)
             driver.get(form_link)
             break
+    bar.finish()
 
     choice = messagebox.askyesno("Confirmation", "Do you want to enter more rules?")
     if not choice:
@@ -182,7 +189,6 @@ def handle_process_rules():
     clear_rules_gui()
 
 def check_if_existing(rule_ref_name):
-    print(rule_ref_name)
     order_number = driver.find_elements(By.XPATH, f"//a[contains(text(), '{rule_ref_name}')]")
     if order_number:
         return True

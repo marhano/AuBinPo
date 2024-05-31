@@ -1,0 +1,17 @@
+[
+    [
+      "version",
+      "text==",
+      "version001"
+    ],
+    [
+      "department",
+      "text<>",
+      "sdd"
+    ],
+    [
+      "email",
+      "text<>",
+      "sdd"
+    ]
+  ]

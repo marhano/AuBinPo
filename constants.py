@@ -1,0 +1,1 @@
+BASE_URL = "http://binpo.paybps.ovpn/intranet/panels/helpdesk_admin.php"
