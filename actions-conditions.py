@@ -52,8 +52,7 @@ for x, y in zip(names, value_opt):
             time.sleep(2)
             #Supporting Assets
             driver.find_element(By.XPATH, supporting_xpath).click()
-            driver.find_element(By.XPATH, 
-            supporting_value).click()
+            driver.find_element(By.XPATH, supporting_value).click()
             time.sleep(2)
             #Sumbit
             driver.find_element(By.XPATH, submit_button).click()
