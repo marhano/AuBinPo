@@ -24,7 +24,11 @@ def handle_login():
     submit.click()
     driver.implicitly_wait(1)                                                               
     
-    driver.get(form_link)
+    #driver.get(form_link)
+    driver.get("http://binpo.paybps.ovpn/intranet/panels/helpdesk_edit_workflow.php?id=97")
+    xpath_expression =  "//td/span[text()='actions4']/ancestor::tr/following-sibling::tr//div[@id='new_link']/a"
+    element = driver.find_element(By.XPATH, xpath_expression)
+    element.click()
 
     # REMOVE LOGIN GUI
     label_username.destroy()
@@ -34,7 +38,7 @@ def handle_login():
     button_login.destroy()
     remember_me_checkbox.destroy()
 
-    create_or_update_rules_gui()
+    #create_or_update_rules_gui()
 
 def create_or_update_rules_gui():
     global rules_gui_created

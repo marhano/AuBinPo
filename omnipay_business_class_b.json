@@ -1,0 +1,249 @@
+{
+    "branch": {
+      "branch_name": {
+        "input_type": "textfield",
+        "required": true,
+        "disabled": false,
+        "reload": false,
+        "separate_cells": false,
+        "label_above_input_field": true,
+        "group_with_next": true,
+        "label_size": 1,
+        "input_size": 1,
+        "optional_hint": false
+      },
+      "branch_contact_person": {
+        "input_type": "textfield",
+        "required": true,
+        "disabled": false,
+        "reload": false,
+        "separate_cells": false,
+        "label_above_input_field": true,
+        "group_with_next": true,
+        "label_size": 1,
+        "input_size": 1,
+        "optional_hint": false
+      },
+      "branch_contact_number": {
+        "input_type": "textfield",
+        "required": true,
+        "disabled": false,
+        "reload": false,
+        "separate_cells": false,
+        "label_above_input_field": true,
+        "group_with_next": false,
+        "label_size": 1,
+        "input_size": 1,
+        "optional_hint": false
+      },
+      "branch_type": {
+        "input_type": "select",
+        "required": true,
+        "disabled": false,
+        "reload": false,
+        "separate_cells": false,
+        "label_above_input_field": true,
+        "group_with_next": true,
+        "values": [
+          "Store",
+          "Pop up",
+          "Virtual"
+        ],
+        "show_please_select_no_default": true,
+        "label_size": 1,
+        "input_size": 1,
+        "optional_hint": false
+      },
+      "branch_address": {
+        "input_type": "textfield",
+        "required": true,
+        "disabled": false,
+        "reload": false,
+        "separate_cells": false,
+        "label_above_input_field": true,
+        "group_with_next": true,
+        "label_size": 1,
+        "input_size": 1,
+        "optional_hint": false
+      },
+      "branch_url": {
+        "input_type": "textfield",
+        "required": true,
+        "disabled": false,
+        "reload": false,
+        "separate_cells": false,
+        "label_above_input_field": true,
+        "group_with_next": false,
+        "label_size": 1,
+        "input_size": 1,
+        "optional_hint": false
+      },
+      
+      "terminal": {
+        "terminal_category": {
+          "input_type": "select",
+          "required": true,
+          "disabled": false,
+          "reload": true,
+          "separate_cells": false,
+          "label_above_input_field": true,
+          "group_with_next": true,
+          "values": [
+            "Store",
+            "Pop up",
+            "Virtual",
+            "Website"
+          ],
+          "show_please_select_no_default": true,
+          "label_size": 1,
+          "input_size": 1,
+          "optional_hint": false
+        },
+        "device_serial_number": {
+          "input_type": "textfield",
+          "required": true,
+          "disabled": false,
+          "reload": false,
+          "separate_cells": false,
+          "label_above_input_field": true,
+          "group_with_next": true,
+          "label_size": 1,
+          "input_size": 1,
+          "optional_hint": false
+        },
+        "location_address": {
+          "input_type": "textfield",
+          "required": true,
+          "disabled": false,
+          "reload": false,
+          "separate_cells": false,
+          "label_above_input_field": true,
+          "group_with_next": true,
+          "label_size": 1,
+          "input_size": 1,
+          "optional_hint": false
+        },
+        "location_url": {
+          "input_type": "textfield",
+          "required": true,
+          "disabled": false,
+          "reload": false,
+          "separate_cells": false,
+          "label_above_input_field": true,
+          "group_with_next": false,
+          "label_size": 1,
+          "input_size": 1,
+          "optional_hint": false
+        },
+        
+        "payment_terminal": {
+          "payment_partner": {
+            "input_type": "select",
+            "required": true,
+            "disabled": false,
+            "reload": false,
+            "separate_cells": false,
+            "label_above_input_field": true,
+            "group_with_next": true,
+            "values": [
+              "OmniPay",
+              "Others"
+            ],
+            "show_please_select_no_default": true,
+            "label_size": 1,
+            "input_size": 1,
+            "optional_hint": false
+          },
+          "preferred_pt_type": {
+            "input_type": "select",
+            "required": true,
+            "disabled": false,
+            "reload": false,
+            "separate_cells": false,
+            "label_above_input_field": true,
+            "group_with_next": true,
+            "values": [
+              "PHQR",
+              "POS",
+              "Others"
+            ],
+            "show_please_select_no_default": true,
+            "label_size": 1,
+            "input_size": 1,
+            "optional_hint": false
+          },
+          "pt_currency": {
+            "input_type": "multiple_checkboxes",
+            "required": true,
+            "disabled": false,
+            "reload": false,
+            "separate_cells": false,
+            "label_above_input_field": true,
+            "group_with_next": true,
+            "values": [
+              "PHP",
+              "USD",
+              "Others"
+            ],
+            "show_please_select_no_default": true,
+            "label_size": 1,
+            "input_size": 1,
+            "optional_hint": false
+          },
+          "pt_sub_type": {
+            "input_type": "select",
+            "required": true,
+            "disabled": false,
+            "reload": false,
+            "separate_cells": false,
+            "label_above_input_field": true,
+            "group_with_next": false,
+            "values": [
+              "Dynamic",
+              "Fixed"
+            ],
+            "show_please_select_no_default": true,
+            "label_size": 1,
+            "input_size": 1,
+            "optional_hint": false
+          },
+          "pt_others": {
+            "input_type": "textfield",
+            "required": false,
+            "disabled": false,
+            "reload": false,
+            "separate_cells": false,
+            "label_above_input_field": true,
+            "group_with_next": true,
+            "label_size": 1,
+            "input_size": 1,
+            "optional_hint": "Please specify Others"
+          },
+          "preferred_pt_type_others": {
+            "input_type": "textfield",
+            "required": false,
+            "disabled": false,
+            "reload": false,
+            "separate_cells": false,
+            "label_above_input_field": true,
+            "group_with_next": true,
+            "label_size": 1,
+            "input_size": 1,
+            "optional_hint": "Please specify Others"
+          },
+          "pt_currency_others": {
+            "input_type": "textfield",
+            "required": false,
+            "disabled": false,
+            "reload": false,
+            "separate_cells": false,
+            "label_above_input_field": true,
+            "group_with_next": false,
+            "label_size": 1,
+            "input_size": 1,
+            "optional_hint": "Please specify Others"
+          }
+        }
+      }
+    }
+  }
