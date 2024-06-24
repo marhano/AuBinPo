@@ -7,6 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 import time
+import winsound
 
 class Infographics(webdriver.Chrome):
     def __init__(self, teardown=False):
@@ -26,7 +27,7 @@ class Infographics(webdriver.Chrome):
         el_password.send_keys(password)
         self.find_element(By.ID, "submit").click()
 
-    def checkout_form(self):
+    def ob_class_b_pas(self):
         self.get(const.OB_CLASS_B)
         cont_btn = self.find_element(By.NAME, 'continue_edit_fields_link')
         cont_btn.click()
@@ -34,116 +35,190 @@ class Infographics(webdriver.Chrome):
         data = read_json()
 
         terminalIDs = ['A', 'B', 'C', 'D', 'E', 'F']
-        paymentTerminalIDs = ['a', 'b', 'c', 'd', 'e', 'f']
+        paymentTerminalIDs = ['1', '2', '3', '4', '5', '6']
+        BRANCH = 2
+        TERMINAL = 2
+        PAYMENT_TERMINAL = 2
 
-        BRANCH = 1
-        TERMINAL = 3
-        PAYMENT_TERMINAL = 3
+        checkbox_data = {
+            "name": "Terminal",
+            "alt_name": False,
+            "input_type": "checkbox",
+            "required": False,
+            "disabled": False,
+            "reload": True,
+            "separate_cells": True,
+            "label_above_input_field": False,
+            "group_with_next": False,
+            "label_size": 1,
+            "input_size": 1,
+            "field_label_css": "checkbox_label",
+            "field_value_css": "checkbox_box",
+            "optional_hint": False
+        }
 
-        create_label(self, 'Branch 1')
+        create_field(self, {"input_type": "label", "name": "Branch 3", "optional_hint": False, "field_label_css": False, "label_size": 1, "group_with_next": False })
         for i in range(1, BRANCH + 1):
-            create_section(self, 'Branch ' + str(i), 'main_branch')
-            for key, value in data['branch'].items():
-                
-                if key == 'terminal':
-                    for j, terminalId in enumerate(terminalIDs[:TERMINAL]):
-                        terminal_section_name = f'Terminal {i}{terminalId}'
-                        print(terminal_section_name)
-                        create_section(self, terminal_section_name, 'terminal_section')
-                        create_checkbox(self, terminal_section_name)
-                        for terminalKey, terminalValue in value.items():
-                            
-                            if terminalKey == 'payment_terminal':
-                                payment_terminal_section_name = f'Payment Terminal {i}{terminalId}'
-                                print('     '+payment_terminal_section_name)
-                                create_section(self, payment_terminal_section_name, 'payment_terminal_section')
-                                
+
+            create_section(self, {"name": "Branch", "visible_header": False, "field_label_css": "main_branch" }, i)
+            for branch in data:
+
+                if isinstance(branch, list):
+
+                    for j, terminalID in enumerate(terminalIDs[:TERMINAL]):
+                        create_section(self, {"name": "Terminal", "visible_header": False, "field_label_css": "terminal_section" }, f"{i}{terminalID}")
+                        checkbox_data['name'] = "Terminal"
+                        create_field(self, checkbox_data, f"{i}{terminalID}")
+
+                        for terminal in branch:
+
+                            if isinstance(terminal, list):
+                                create_section(self, {"name": "Payment Terminal", "visible_header": False, "field_label_css": "payment_terminal_section" }, f"{i}{terminalID}")
+
                                 for k, paymentTerminalID in enumerate(paymentTerminalIDs[:PAYMENT_TERMINAL]):
-                                    payment_terminal_name = f'Payment Terminal {i}{terminalId}{paymentTerminalID}'
-                                    print('          '+payment_terminal_name)
-                                    create_checkbox(self, payment_terminal_name)
-                                    
-                                    for paymentTerminalKey, paymentTerminalValue in terminalValue.items():
-                                        field_name = f'{paymentTerminalKey} {i}{terminalId}{paymentTerminalID}'
-                                        print('          '+'\033[92m'+field_name+'\033[0m')
+                                    checkbox_data['name'] = "Payment Terminal"
+                                    create_field(self, checkbox_data, f"{i}{terminalID}{paymentTerminalID}")
 
-                                        new_label = paymentTerminalKey
-                                        if paymentTerminalKey != 'payment_partner':
-                                            new_label = replace_pt_with_payment_terminal(paymentTerminalKey)
-
-                                        if paymentTerminalValue['input_type'] == 'textfield':
-                                            create_textfield(self, field_name, paymentTerminalValue)
-                                            edit_field_label(self, field_name, new_label)
-                                        elif paymentTerminalValue['input_type'] == 'select':
-                                            create_select(self, field_name, paymentTerminalValue)
-                                            edit_field_label(self, field_name, new_label)
-                                        elif paymentTerminalValue['input_type'] == 'multiple_checkboxes':
-                                            create_multiple_checkboxes(self, field_name, paymentTerminalValue)
-                                            edit_field_label(self, field_name, new_label)
-                                if (j + 1) == TERMINAL & i != BRANCH :
-                                    print("BRANCH NAME CHECKBOX")
-                                    create_checkbox(self, 'Branch ' + str((i + 1)))
+                                    for paymentTerminal in terminal:
+                                        create_field(self, paymentTerminal, f"{i}{terminalID}{paymentTerminalID}")
+                                        if paymentTerminal['name'] != "Payment Partner":
+                                            edit_field(self, paymentTerminal, f"{i}{terminalID}{paymentTerminalID}")
+                                if (j + 1) == TERMINAL & i != BRANCH:
+                                    checkbox_data['name'] = "Branch"
+                                    create_field(self, checkbox_data, f"{str(i + 1)}")
                             else:
-                                field_name = f'{terminalKey} {i}{terminalId}'
-                                print('\033[96m'+'     '+field_name+'\033[0m')
-
-                                if terminalValue['input_type'] == 'textfield':
-                                    create_textfield(self, field_name, terminalValue)
-                                    edit_field_label(self, field_name, terminalKey)
-                                elif terminalValue['input_type'] == 'select':
-                                    create_select(self, field_name, terminalValue)
-                                    edit_field_label(self, field_name, terminalKey)
+                                create_field(self, terminal, f"{i}{terminalID}")
                 else:
-                    field_name = f'{key} {i}'
-                    print(f"\033[94m{field_name}\033[0m")
-                    if value['input_type'] == 'textfield':
-                        create_textfield(self, field_name, value)
-                        edit_field_label(self, field_name, key)
-                    elif value['input_type'] == 'select':
-                        create_select(self, field_name, value)
-                        edit_field_label(self, field_name, key)
+                    create_field(self, branch, i)
 
-
-def create_label(self, label):
+# tested on(textfield, select, label, checkbox, multiple_checkbox)
+def create_field(self, options, _index=None):
     if const.SWITCH == False:
         return
+    
+    def send_keys(id, option, index=None):
+        form_field = self.find_element(By.ID, id)
+        if option:
+            form_field.clear()
+            if index:
+                form_field.send_keys(f"{option} {index}")
+                return
+            
+            form_field.send_keys(option)
 
-    attempts = 0
-
-    while attempts < const.MAX_RETRIES:
-        try:
-            form_field = self.find_element(By.XPATH, "//div[@class='btn-group']/a[@title='Label']")
+        else:
+            form_field.clear()
+    
+    def click_element(id, option):
+        form_field = self.find_element(By.ID, id)
+    
+        if form_field.is_selected() != option:
             form_field.click()
+    
+    attempts = False
+
+    while attempts == False:
+        try:
+            if options['input_type'] == "multiple_checkboxes":
+                form_field = self.find_element(By.XPATH, "//div[@class='btn-group']/a[@title='Checkbox']")
+                form_field.click()
+
+                field_type_select = self.find_element(By.XPATH, "//select[@id='field_type_select']")
+                field_type_select.click()
+                field_type_option = self.find_element(By.XPATH, "//select[@id='field_type_select']/option[@value='22']")
+                field_type_option.click()
+            else:
+                form_field = self.find_element(By.XPATH, f"//div[@class='btn-group']/a[@title='{format_text(options['input_type'])}']")
+                form_field.click()
 
             self.implicitly_wait(5)
 
-            field_input = self.find_element(By.ID, "field_label")
-            field_input.send_keys(format_text(label))
+            # properties
+            name = options['alt_name'] if options.get('alt_name') else options['name']
+            if _index:
+                send_keys("field_label", name, _index)
+            else:
+                send_keys("field_label", name)
+            send_keys("field_description", options['optional_hint'])
 
+            if options['input_type'] != "label":
+                click_element("field_required", options['required'])
+                click_element("field_disabled", options['disabled'])
+                click_element("field_dynamic", options['reload'])
+
+            if options['input_type'] == "select" or options['input_type'] == "multiple_checkboxes":
+                actions = ActionChains(self)
+                field_values = self.find_element(By.ID, 'field_values')
+                actions.click(field_values)
+                for value in options['values']:
+                    actions.send_keys(value)
+                    actions.send_keys(Keys.ENTER)
+                actions.perform()
+
+                click_element("no_default", options['show_please_select_no_default'])
+
+            # style
             change_tab(self, "Style")
-
             change_field_position(self)
 
+            send_keys("field_style", options['field_label_css'])
+            send_keys("field_title_size", options['label_size'])
+            click_element("field_group_cells", options['group_with_next'])
+
+            if options['input_type'] != "label":
+                send_keys("field_style2", options['field_value_css'])
+                send_keys("field_field_size", options['input_size'])
+                click_element("field_two_cells", options['separate_cells'])
+                click_element("field_on_top", options['label_above_input_field'])
+            
+            if options['input_type'] == "multiple_checkboxes":
+                click_element("field_inline_layout", options['horizontal_layout'])
+
+            # save
             save_btn = self.find_element(By.ID, "save_field_button")
             save_btn.click()
+            if options['input_type'] == "select":
+                self.implicitly_wait(5)
+                save_btn = self.find_element(By.ID, "save_field_button")
+                save_btn.click()
+
+            print(f'\033[92m{options["name"]} {_index}\033[0m')
+            attempts = True
 
             break
 
         except Exception as e:
-            print(f'\033[91mAn error occurred: {label}. Retrying...\033[0m')
-            attempts += 1
+            print(f'\033[91mAn error occurred: Create field, {options["name"]}. Retrying...\033[0m')
+            play_alert_sound()
             close_edit_field_modal(self)
-            time.sleep(2)
-    if attempts == const.MAX_RETRIES:
-        print(f"Failed to create label {label} after several attempts.")
+            time.sleep(5)
     
-def create_section(self, label, css):
+def create_section(self, options, _index=None):
     if const.SWITCH == False:
         return
     
-    attempts = 0
+    def send_keys(id, option, index=None):
+        form_field = self.find_element(By.ID, id)
+        if option:
+            form_field.clear()
+            if index:
+                form_field.send_keys(f"{option} {index}")
+                return
+            
+            form_field.send_keys(option)
+
+        else:
+            form_field.clear()
     
-    while attempts < const.MAX_RETRIES:
+    def click_element(id, option):
+        form_field = self.find_element(By.ID, id)
+    
+        if form_field.is_selected() != option:
+            form_field.click()
+    
+    attempts = False
+    
+    while attempts == False:
         try:
             self.implicitly_wait(5)
             form_field = self.find_element(By.XPATH, "//div[@class='btn-group']/a[@title='Add a new section']")
@@ -151,17 +226,12 @@ def create_section(self, label, css):
 
             self.implicitly_wait(5)
 
-            field_input = self.find_element(By.ID, "section_label")
-            field_input.clear()
-            field_input.send_keys(label)
-
-            visible_checkbox = self.find_element(By.ID, "visible_checkbox")
-            visible_checkbox.click()
+            send_keys("section_label", options['name'], _index) if _index else send_keys("section_label", options['name'])
+            click_element("visible_checkbox", options['visible_header'])
 
             change_field_position(self)
 
-            style_css = self.find_element(By.ID, 'section_style')
-            style_css.send_keys(css)
+            send_keys("section_style", options['field_label_css'])
 
             section_form = self.find_element(By.ID, 'edit_section_form')
             save_btn = section_form.find_element(By.XPATH, "//div[@class='modal-footer']/input[@class='btn btn-primary']")
@@ -170,334 +240,35 @@ def create_section(self, label, css):
             break
 
         except Exception as e:
-            print(f'\033[91mAn error occurred: {label}. Retrying...\033[0m')
-            attempts += 1
+            print(f'\033[91mAn error occurred: Create section, {options["name"]} {e}. Retrying...\033[0m')
+            play_alert_sound()
             close_edit_field_modal(self)
-            time.sleep(2)
-    if attempts == const.MAX_RETRIES:
-        print(f"Failed to create section {label} after several attempts.")
+            time.sleep(5)
 
-def create_checkbox(self, label):
+# deprecated
+def edit_field(self, option, _index=None):
     if const.SWITCH == False:
         return
     
-    attempts = 0
-
-    while attempts < const.MAX_RETRIES:
-        try:
-            form_field = self.find_element(By.XPATH, "//div[@class='btn-group']/a[@title='Checkbox']")
-            form_field.click()
-
-            self.implicitly_wait(5)
-
-            field_input = self.find_element(By.ID, "field_label")
-            field_input.send_keys(label)
-
-            reload_checkbox = self.find_element(By.ID, 'field_dynamic')
-            reload_checkbox.click()
-
-            change_tab(self, "Style")
-            change_field_position(self)
-
-            css_field_label = self.find_element(By.ID, 'field_style')
-            css_field_label.clear()
-            css_field_label.send_keys('checkbox_label')
-
-            css_field_value = self.find_element(By.ID, 'field_style2')
-            css_field_value.clear()
-            css_field_value.send_keys('checkbox_box')
-
-            separate_cells_checkbox = self.find_element(By.ID, 'field_two_cells')
-            separate_cells_checkbox.click()
-
-            save_btn = self.find_element(By.ID, "save_field_button")
-            save_btn.click()
-
-            break
-
-        except Exception as e:
-            print(f'\033[91mAn error occurred: {label}. Retrying...\033[0m')
-            attempts += 1
-            close_edit_field_modal(self)
-            time.sleep(2)
-
-    if attempts == const.MAX_RETRIES:
-        print(f"Failed to create checkbox {label} after several attempts.")
-
-def create_textfield(self, label, options):
-    if const.SWITCH == False:
-        return
-
-    attempts = 0
-
-    while attempts < const.MAX_RETRIES:
-        try:
-            form_field = self.find_element(By.XPATH, "//div[@class='btn-group']/a[@title='Textfield']")
-            form_field.click()
-
-            self.implicitly_wait(5)
-
-            field_input = self.find_element(By.ID, "field_label")
-            field_input.send_keys(format_text(label))
-
-            #PROPERTIES
-            if options['required']:
-                required_checkbox = self.find_element(By.ID, 'field_required')
-                required_checkbox.click()
-            if options['disabled']:
-                disabled_checkbox = self.find_element(By.ID, 'field_disabled')
-                disabled_checkbox.click()
-            if options['reload']:
-                reload_checkbox = self.find_element(By.ID, 'field_dynamic')
-                reload_checkbox.click()
-            if options['optional_hint']:
-                form_input = self.find_element(By.ID, 'field_description')
-                form_input.clear()
-                form_input.send_keys(options['optional_hint'])
-
-            #STYLE
-            change_tab(self, "Style")
-            change_field_position(self)
-
-            css_field_label = self.find_element(By.ID, 'field_style')
-            css_field_label.clear()
-            css_field_value = self.find_element(By.ID, 'field_style2')
-            css_field_value.clear()
-
-            if options['label_size']:
-                form_input = self.find_element(By.ID, 'field_title_size')
-                form_input.clear()
-                form_input.send_keys(options['label_size'])
-            if options['input_size']:
-                form_input = self.find_element(By.ID, 'field_field_size')
-                form_input.clear()
-                form_input.send_keys(options['input_size'])
-            if options['separate_cells']:
-                form_checkbox = self.find_element(By.ID, 'field_two_cells')
-                form_checkbox.click()
-            else:
-                form_checkbox = self.find_element(By.ID, 'field_two_cells')
-                if form_checkbox.is_selected():
-                    form_checkbox.click()
-            if options['label_above_input_field']:
-                form_checkbox = self.find_element(By.ID, 'field_on_top')
-                form_checkbox.click()
-            if options['group_with_next']:
-                form_checkbox = self.find_element(By.ID, 'field_group_cells')
-                form_checkbox.click()
-
-            #SAVE
-            save_btn = self.find_element(By.ID, "save_field_button")
-            save_btn.click()
-
-            break
-
-        except Exception as e:
-            print(f'\033[91mAn error occurred: {label}. Retrying...\033[0m')
-            attempts += 1
-            close_edit_field_modal(self)
-            time.sleep(2)
-            
-    if attempts == const.MAX_RETRIES:
-        print(f"Failed to create {options['input_type']} {label} after several attempts.")
-
-def create_select(self, label, options):
-    if const.SWITCH == False:
-        return
-    
-    attempts = 0
-
-    while attempts < const.MAX_RETRIES:
-        try:
-            form_field = self.find_element(By.XPATH, "//div[@class='btn-group']/a[@title='Select']")
-            form_field.click()
-
-            self.implicitly_wait(5)
-
-            field_input = self.find_element(By.ID, "field_label")
-            field_input.send_keys(format_text(label))
-
-            #ACTIONS
-            actions = ActionChains(self)
-
-            #PROPERTIES
-            field_values = self.find_element(By.ID, 'field_values')
-            actions.click(field_values)
-            for value in options['values']:
-                actions.send_keys(value)
-                actions.send_keys(Keys.ENTER)
-
-            actions.perform()
-
-            if options['show_please_select_no_default']:
-                form_checkbox = self.find_element(By.ID, 'no_default')
-                form_checkbox.click()
-            if options['required']:
-                form_checkbox = self.find_element(By.ID, 'field_required')
-                form_checkbox.click()
-            if options['disabled']:
-                form_checkbox = self.find_element(By.ID, 'field_disabled')
-                form_checkbox.click()
-            if options['reload']:
-                form_checkbox = self.find_element(By.ID, 'field_dynamic')
-                form_checkbox.click()
-
-            #STYLE
-            change_tab(self, "Style")
-            change_field_position(self)
-
-            css_field_label = self.find_element(By.ID, 'field_style')
-            css_field_label.clear()
-            css_field_value = self.find_element(By.ID, 'field_style2')
-            css_field_value.clear()
-
-            if options['label_size']:
-                form_input = self.find_element(By.ID, 'field_title_size')
-                form_input.clear()
-                form_input.send_keys(options['label_size'])
-            if options['input_size']:
-                form_input = self.find_element(By.ID, 'field_field_size')
-                form_input.clear()
-                form_input.send_keys(options['input_size'])
-            if options['separate_cells']:
-                form_checkbox = self.find_element(By.ID, 'field_two_cells')
-                form_checkbox.click()
-            else:
-                form_checkbox = self.find_element(By.ID, 'field_two_cells')
-                if form_checkbox.is_selected():
-                    form_checkbox.click()
-
-            if options['label_above_input_field']:
-                form_checkbox = self.find_element(By.ID, 'field_on_top')
-                form_checkbox.click()
-            if options['group_with_next']:
-                form_checkbox = self.find_element(By.ID, 'field_group_cells')
-                form_checkbox.click()
-
-            #SAVE
-            save_btn = self.find_element(By.ID, "save_field_button")
-            save_btn.click()
-            self.implicitly_wait(5)
-            save_btn = self.find_element(By.ID, "save_field_button")
-            save_btn.click()
-
-            break
-
-        except Exception as e:
-            print(f'\033[91mAn error occurred: {label}. Retrying...\033[0m')
-            attempts += 1
-            close_edit_field_modal(self)
-            time.sleep(2)
-            
-    if attempts == const.MAX_RETRIES:
-        print(f"Failed to create {options['input_type']} {label} after several attempts.")
-
-def create_multiple_checkboxes(self, label, options):
-    if const.SWITCH == False:
-        return
-    
-    attempts = 0
-    
-    while attempts < const.MAX_RETRIES:
-        try:
-            form_field = self.find_element(By.XPATH, "//div[@class='btn-group']/a[@title='Checkbox']")
-            form_field.click()
-
-            self.implicitly_wait(5)
-
-            field_type = self.find_element(By.XPATH, "//select[@id='field_type_select']")
-            field_type.click()
-            field_type_option = self.find_element(By.XPATH, "//select[@id='field_type_select']/option[@value='22']")
-            field_type_option.click()
-
-            field_input = self.find_element(By.ID, "field_label")
-            field_input.send_keys(format_text(label))
-
-            #ACTIONS
-            actions = ActionChains(self)
-
-            #PROPERTIES
-            field_values = self.find_element(By.ID, 'field_values')
-            actions.click(field_values)
-            for value in options['values']:
-                actions.send_keys(value)
-                actions.send_keys(Keys.ENTER)
-
-            actions.perform()
-
-            if options['required']:
-                form_checkbox = self.find_element(By.ID, 'field_required')
-                form_checkbox.click()
-            if options['disabled']:
-                form_checkbox = self.find_element(By.ID, 'field_disabled')
-                form_checkbox.click()
-            if options['reload']:
-                form_checkbox = self.find_element(By.ID, 'field_dynamic')
-                form_checkbox.click()
-
-            #STYLE
-            change_tab(self, "Style")
-            change_field_position(self)
-
-            css_field_label = self.find_element(By.ID, 'field_style')
-            css_field_label.clear()
-            css_field_value = self.find_element(By.ID, 'field_style2')
-            css_field_value.clear()
-            if options['label_size']:
-                form_input = self.find_element(By.ID, 'field_title_size')
-                form_input.clear()
-                form_input.send_keys(options['label_size'])
-            if options['input_size']:
-                form_input = self.find_element(By.ID, 'field_field_size')
-                form_input.clear()
-                form_input.send_keys(options['input_size'])
-            if options['separate_cells']:
-                form_checkbox = self.find_element(By.ID, 'field_two_cells')
-                form_checkbox.click()
-            if options['label_above_input_field']:
-                form_checkbox = self.find_element(By.ID, 'field_on_top')
-                form_checkbox.click()
-            if options['group_with_next']:
-                form_checkbox = self.find_element(By.ID, 'field_group_cells')
-                form_checkbox.click()
-
-            save_btn = self.find_element(By.ID, "save_field_button")
-            save_btn.click()
-
-            break
-
-        except Exception as e:
-            print(f'\033[91mAn error occurred: {label}. Retrying...\033[0m')
-            attempts += 1
-            close_edit_field_modal(self)
-            time.sleep(2)
-            
-    if attempts == const.MAX_RETRIES:
-        print(f"Failed to create {options['input_type']} {label} after several attempts.")
-
-def edit_field_label(self, label, new_label):
-    if const.SWITCH == False:
-        return
-
-    transform_label = transform_string(label)
-    modified_label = transform_label.replace(' ', '_')
-
     attempts = False
 
     while attempts == False:
         try:
             self.implicitly_wait(5)
-            edit_btn = self.find_element(By.XPATH, f"//label[@for='_115__field_{modified_label}']/a")
 
+            element_id = f'_115__field_{convert_to_id(option["alt_name"])}'
+            if _index:
+                element_id += f'_{convert_to_id(_index)}'
+            
+            edit_btn = self.find_element(By.XPATH, f"//label[@for='{element_id}']/a")
             self.execute_script("arguments[0].scrollIntoView({ block: 'center' });", edit_btn)
-
             edit_btn.click()
 
             self.implicitly_wait(5)
 
             field_input = self.find_element(By.ID, "field_label")
             field_input.clear()
-            field_input.send_keys(format_text(new_label))
+            field_input.send_keys(f'{option["name"]} {_index}')
 
             save_btn = self.find_element(By.ID, "save_field_button")
             save_btn.click()
@@ -507,11 +278,14 @@ def edit_field_label(self, label, new_label):
             break
 
         except Exception as e:
-            print(f'\033[93mAn error occurred: {modified_label}. Retrying...\033[0m')
-            time.sleep(3)
-            
-    if attempts == const.MAX_RETRIES:
-        print(f"\033[91mFailed to edit {label} after several attempts.\033[0m")
+            print(f'\033[93mAn error occurred: Edit field, {convert_to_id(option["name"])}. Retrying...\033[0m')
+            play_alert_sound()
+            time.sleep(5)
+
+# HELPER METHODS
+def play_alert_sound():
+    if const.ERROR_ALERT:
+        winsound.Beep(1000, 500)
 
 def read_json():
     with open(const.JSON_PATH, 'r') as ob_obj:
@@ -519,22 +293,14 @@ def read_json():
     
     return data
 
+def convert_to_id(string):
+    return string.lower().replace(' ', '_')
+
 def format_text(label):
     label = label.replace('_', ' ')
     label = label.title()
     
     return label
-
-def transform_string(input_string):
-    parts = input_string.rsplit(' ', 1)
-    
-    if len(parts) == 2:
-        parts[1] = parts[1].lower()
-    
-    return ' '.join(parts)
-
-def replace_pt_with_payment_terminal(labels):
-    return labels.replace("pt", "payment_terminal")
 
 def change_tab(self, tab_name):
     style_tab = self.find_element(By.XPATH, f"//a[text()='{tab_name}']")
@@ -556,5 +322,8 @@ def change_field_position(self):
             self.LAST_FIELD_POS += 1
 
 def close_edit_field_modal(self):
-    close_button = self.find_element(By.XPATH, "//form[@name='edit_field_form']//button[@class='close']")
-    close_button.click()
+    try:
+        close_button = self.find_element(By.XPATH, "//form[@name='edit_field_form']//button[@class='close']")
+        close_button.click()
+    except Exception as e:
+        print(f"Error closing modal: {e}")
