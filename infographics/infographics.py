@@ -1,7 +1,7 @@
 import constants as const
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from ui.forms import AddNewFieldConditionForm
+#from ui.forms import AddNewFieldConditionForm
 import json
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -90,6 +90,20 @@ class Infographics(webdriver.Chrome):
                                 create_field(self, terminal, f"{i}{terminalID}")
                 else:
                     create_field(self, branch, i)
+
+    def ob_class_b1_asi(self):
+        self.get(const.OB_CLASS_B)
+        cont_btn = self.find_element(By.NAME, 'continue_edit_fields_link')
+        cont_btn.click()
+
+        data = read_json()
+        print(data)
+        ASI = 10
+
+        for i in range(1, ASI + 1):
+            for asi in data:
+                if isinstance(asi, list):
+                    create_field(self, asi, i)
 
 # tested on(textfield, select, label, checkbox, multiple_checkbox)
 def create_field(self, options, _index=None):
@@ -298,7 +312,7 @@ def convert_to_id(string):
 
 def format_text(label):
     label = label.replace('_', ' ')
-    label = label.title()
+    label = label.ghb
     
     return label
 
