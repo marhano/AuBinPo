@@ -1,0 +1,50 @@
+[
+    {
+        "name": "Full Name Authorize",
+        "alt_name": false,
+        "input_type": "textfield",
+        "required": true,
+        "disabled": false,
+        "reload": false,
+        "separate_cells": false,
+        "label_above_input_field": false,
+        "group_with_next": true,
+        "label_size": 1,
+        "input_size": 4,
+        "field_label_css": "full_name_label",
+        "field_value_css": "full_name_margin",
+        "optional_hint": false
+    },
+    {
+        "name": "Email Address Authorize",
+        "alt_name": false,
+        "input_type": "textfield",
+        "required": true,
+        "disabled": false,
+        "reload": false,
+        "separate_cells": false,
+        "label_above_input_field": true,
+        "group_with_next": true,
+        "label_size": 2,
+        "input_size": 2,
+        "field_label_css": "hide_me",
+        "field_value_css": false,
+        "optional_hint": false
+    },
+    {
+        "name": "Account User Checkbox",
+        "alt_name": false,
+        "input_type": "checkbox",
+        "required": false,
+        "disabled": false,
+        "reload": true,
+        "separate_cells": false,
+        "label_above_input_field": false,
+        "group_with_next": false,
+        "label_size": 1,
+        "input_size": 1,
+        "field_label_css": false,
+        "field_value_css": false,
+        "optional_hint": "Check to add more item"
+    }
+]
