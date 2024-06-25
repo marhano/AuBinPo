@@ -32,7 +32,7 @@ class Infographics(webdriver.Chrome):
         cont_btn = self.find_element(By.NAME, 'continue_edit_fields_link')
         cont_btn.click()
 
-        data = read_json(const.JSON_PATH)
+        data = read_json(const.JSON_PATH_OBPAS)
 
         terminalIDs = ['A', 'B', 'C', 'D', 'E', 'F']
         paymentTerminalIDs = ['1', '2', '3', '4', '5', '6']
@@ -96,14 +96,14 @@ class Infographics(webdriver.Chrome):
         cont_btn = self.find_element(By.NAME, 'continue_edit_fields_link')
         cont_btn.click()
 
-        data = read_json()
-        print(data)
+        data = read_json(const.JSON_PATH_OBASI)
+        # print(data)
         ASI = 10
 
         for i in range(1, ASI + 1):
             for asi in data:
-                if isinstance(asi, list):
-                    create_field(self, asi, i)
+                create_field(self, asi, i)
+                    
 
 # tested on(textfield, select, label, checkbox, multiple_checkbox)
 def create_field(self, options, _index=None):
@@ -202,7 +202,7 @@ def create_field(self, options, _index=None):
             break
 
         except Exception as e:
-            print(f'\033[91mAn error occurred: Create field, {options["name"]}. Retrying...\033[0m')
+            print(f'\033[91mAn error occurred: Create field, {options["name"]} {e}. Retrying...\033[0m')
             play_alert_sound()
             close_edit_field_modal(self)
             time.sleep(5)
@@ -312,7 +312,7 @@ def convert_to_id(string):
 
 def format_text(label):
     label = label.replace('_', ' ')
-    label = label.ghb
+    label = label.title()
     
     return label
 
