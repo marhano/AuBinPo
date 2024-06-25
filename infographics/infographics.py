@@ -91,7 +91,7 @@ class Infographics(webdriver.Chrome):
                 else:
                     create_field(self, branch, i)
 
-    def ob_class_b1_asi(self):
+    def ob_class_b_asi(self):
         self.get(const.OB_CLASS_B)
         cont_btn = self.find_element(By.NAME, 'continue_edit_fields_link')
         cont_btn.click()
@@ -104,6 +104,21 @@ class Infographics(webdriver.Chrome):
             for asi in data:
                 create_field(self, asi, i)
                     
+    def ob_class_b_account_user(self):
+        self.get(const.OB_CLASS_B)
+        # edit_btn = self.find_element(By.NAME, 'edit_fields_link')
+        # edit_btn.click()
+        cont_btn = self.find_element(By.NAME, 'continue_edit_fields_link')
+        cont_btn.click()
+
+        data = read_json(const.JSON_PATH_OBAU)
+        
+        accounts = 15
+
+        for i in range(13, accounts):
+            for account in data:
+                create_field(self, account, i)
+
 
 # tested on(textfield, select, label, checkbox, multiple_checkbox)
 def create_field(self, options, _index=None):
