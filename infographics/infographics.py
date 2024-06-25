@@ -32,7 +32,7 @@ class Infographics(webdriver.Chrome):
         cont_btn = self.find_element(By.NAME, 'continue_edit_fields_link')
         cont_btn.click()
 
-        data = read_json()
+        data = read_json(const.JSON_PATH)
 
         terminalIDs = ['A', 'B', 'C', 'D', 'E', 'F']
         paymentTerminalIDs = ['1', '2', '3', '4', '5', '6']
@@ -301,8 +301,8 @@ def play_alert_sound():
     if const.ERROR_ALERT:
         winsound.Beep(1000, 500)
 
-def read_json():
-    with open(const.JSON_PATH, 'r') as ob_obj:
+def read_json(json_path):
+    with open(json_path, 'r') as ob_obj:
         data = json.load(ob_obj)
     
     return data
