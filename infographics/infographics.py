@@ -118,7 +118,8 @@ class Infographics(webdriver.Chrome):
         for i in range(13, accounts):
             for account in data:
                 create_field(self, account, i)
-
+                if account['name'] == "Full Name Authorize":
+                    edit_field(self, accounts, i, "list")
 
 # tested on(textfield, select, label, checkbox, multiple_checkbox)
 def create_field(self, options, _index=None):
