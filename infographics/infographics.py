@@ -290,9 +290,9 @@ def edit_field(self, option, _index=None, custom=None):
                 element_id = f'_115__field_{convert_to_id(option["alt_name"])}'
             else:
                 element_id = f'_115__field_{convert_to_id(option["name"])}'
+
             if _index:
-                element_id += f'_{convert_to_id(str(_index))}'
-            
+                element_id += f'_{convert_to_id(_index)}'
             edit_btn = self.find_element(By.XPATH, f"//label[@for='{element_id}']/a")
             self.execute_script("arguments[0].scrollIntoView({ block: 'center' });", edit_btn)
             edit_btn.click()
