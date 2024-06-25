@@ -276,7 +276,7 @@ def create_section(self, options, _index=None):
             time.sleep(5)
 
 # deprecated
-def edit_field(self, option, _index=None, custom=False):
+def edit_field(self, option, _index=None, custom=None):
     if const.SWITCH == False:
         return
     
@@ -286,9 +286,12 @@ def edit_field(self, option, _index=None, custom=False):
         try:
             self.implicitly_wait(5)
 
-            element_id = f'_115__field_{convert_to_id(option["alt_name"])}'
+            if option["alt_name"]:
+                element_id = f'_115__field_{convert_to_id(option["alt_name"])}'
+            else:
+                element_id = f'_115__field_{convert_to_id(option["name"])}'
             if _index:
-                element_id += f'_{convert_to_id(_index)}'
+                element_id += f'_{convert_to_id(str(_index))}'
             
             edit_btn = self.find_element(By.XPATH, f"//label[@for='{element_id}']/a")
             self.execute_script("arguments[0].scrollIntoView({ block: 'center' });", edit_btn)
@@ -313,7 +316,7 @@ def edit_field(self, option, _index=None, custom=False):
             break
 
         except Exception as e:
-            print(f'\033[93mAn error occurred: Edit field, {convert_to_id(option["name"])}. Retrying...\033[0m')
+            print(f'\033[93mAn error occurred: Edit field, {convert_to_id(option["name"])} {e}. Retrying...\033[0m')
             play_alert_sound()
             time.sleep(5)
 
