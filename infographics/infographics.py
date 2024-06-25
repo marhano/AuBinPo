@@ -260,7 +260,7 @@ def create_section(self, options, _index=None):
             time.sleep(5)
 
 # deprecated
-def edit_field(self, option, _index=None):
+def edit_field(self, option, _index=None, custom=False):
     if const.SWITCH == False:
         return
     
@@ -280,9 +280,14 @@ def edit_field(self, option, _index=None):
 
             self.implicitly_wait(5)
 
-            field_input = self.find_element(By.ID, "field_label")
-            field_input.clear()
-            field_input.send_keys(f'{option["name"]} {_index}')
+            if custom == "list":
+                field_input = self.find_element(By.ID, "field_label")
+                field_input.clear()
+                field_input.send_keys(f'{_index}')
+            else:
+                field_input = self.find_element(By.ID, "field_label")
+                field_input.clear()
+                field_input.send_keys(f'{option["name"]} {_index}')
 
             save_btn = self.find_element(By.ID, "save_field_button")
             save_btn.click()
