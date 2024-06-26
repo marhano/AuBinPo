@@ -113,13 +113,13 @@ class Infographics(webdriver.Chrome):
 
         data = read_json(const.JSON_PATH_OBAU)
         
-        accounts = 15
+        accounts = 10
 
-        for i in range(13, accounts):
+        for i in range(1, accounts + 1):
             for account in data:
                 create_field(self, account, i)
-                if account['name'] == "Full Name Authorize":
-                    edit_field(self, accounts, i, "list")
+                if account['name'] == "Full Name User":
+                    edit_field(self, account, i, "list")
 
 # tested on(textfield, select, label, checkbox, multiple_checkbox)
 def create_field(self, options, _index=None):
@@ -287,9 +287,9 @@ def edit_field(self, option, _index=None, custom=None):
             self.implicitly_wait(5)
 
             if option["alt_name"]:
-                element_id = f'_115__field_{convert_to_id(option["alt_name"])}'
+                element_id = f'_100__field_{convert_to_id(option["alt_name"])}'
             else:
-                element_id = f'_115__field_{convert_to_id(option["name"])}'
+                element_id = f'_100__field_{convert_to_id(option["name"])}'
 
             if _index:
                 element_id += f'_{convert_to_id(str(_index))}'

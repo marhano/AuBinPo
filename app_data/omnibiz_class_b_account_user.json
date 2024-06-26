@@ -1,6 +1,6 @@
 [
     {
-        "name": "Full Name Authorize",
+        "name": "Full Name User",
         "alt_name": false,
         "input_type": "textfield",
         "required": true,
@@ -16,7 +16,7 @@
         "optional_hint": false
     },
     {
-        "name": "Email Address Authorize",
+        "name": "Email Address User",
         "alt_name": false,
         "input_type": "textfield",
         "required": true,
