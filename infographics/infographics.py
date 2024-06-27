@@ -21,6 +21,7 @@ class Infographics(webdriver.Chrome):
 
     def login_user(self, username, password):
         self.get(const.BASE_URL)
+        self.maximize_window() 
         el_username = self.find_element(By.ID, "frmuser")
         el_username.send_keys(username)
         el_password = self.find_element(By.ID, "frmpass")
@@ -28,7 +29,7 @@ class Infographics(webdriver.Chrome):
         self.find_element(By.ID, "submit").click()
 
     def ob_class_b_pas(self):
-        self.get(const.OB_CLASS_B)
+        self.get(const.OB_CLASS_B_FORM)
         cont_btn = self.find_element(By.NAME, 'continue_edit_fields_link')
         cont_btn.click()
 
@@ -92,7 +93,7 @@ class Infographics(webdriver.Chrome):
                     create_field(self, branch, i)
 
     def ob_class_b_asi(self):
-        self.get(const.OB_CLASS_B)
+        self.get(const.OB_CLASS_B_FORM)
         cont_btn = self.find_element(By.NAME, 'continue_edit_fields_link')
         cont_btn.click()
 
@@ -105,7 +106,7 @@ class Infographics(webdriver.Chrome):
                 create_field(self, asi, i)
                     
     def ob_class_b_account_user(self):
-        self.get(const.OB_CLASS_B)
+        self.get(const.OB_CLASS_B_FORM)
         # edit_btn = self.find_element(By.NAME, 'edit_fields_link')
         # edit_btn.click()
         cont_btn = self.find_element(By.NAME, 'continue_edit_fields_link')
@@ -120,6 +121,16 @@ class Infographics(webdriver.Chrome):
                 create_field(self, account, i)
                 if account['name'] == "Full Name User":
                     edit_field(self, account, i, "list")
+
+    def ob_class_b_condition_sets(self):
+        self.get(const.OB_CLASS_B_CONDITION_SET)
+
+        data = read_json(const.JSON_PATH_OBAU_CONDITON_SET)
+        ACCOUNT_CS = 10
+
+        for i in range(2, ACCOUNT_CS + 1):
+            for conditions in data:
+                create_condition(self, conditions, i)
 
 # tested on(textfield, select, label, checkbox, multiple_checkbox)
 def create_field(self, options, _index=None):
@@ -287,9 +298,9 @@ def edit_field(self, option, _index=None, custom=None):
             self.implicitly_wait(5)
 
             if option["alt_name"]:
-                element_id = f'_100__field_{convert_to_id(option["alt_name"])}'
+                element_id = f'_{const.FORM_ID}__field_{convert_to_id(option["alt_name"])}'
             else:
-                element_id = f'_100__field_{convert_to_id(option["name"])}'
+                element_id = f'_{const.FORM_ID}__field_{convert_to_id(option["name"])}'
 
             if _index:
                 element_id += f'_{convert_to_id(str(_index))}'
@@ -318,6 +329,74 @@ def edit_field(self, option, _index=None, custom=None):
         except Exception as e:
             print(f'\033[93mAn error occurred: Edit field, {convert_to_id(option["name"])} {e}. Retrying...\033[0m')
             play_alert_sound()
+            time.sleep(5)
+
+def create_condition(self, options, index=None):
+    if const.SWITCH == False:
+        return
+    
+    def send_keys(id, option, index=None):
+        form_field = self.find_element(By.ID, id)
+        if option:
+            form_field.clear()
+            if index:
+                form_field.send_keys(f"{option} {index}")
+                return
+            
+            form_field.send_keys(option)
+
+        else:
+            form_field.clear()
+    
+    def click_element(id, option):
+        form_field = self.find_element(By.ID, id)
+    
+        if form_field.is_selected() != option:
+            form_field.click()
+
+    def click_value_element(value, option):
+        form_field = self.find_element(By.XPATH, value)
+    
+        if form_field.is_selected() != option:
+            form_field.click()
+    
+    attempts = False
+
+    while attempts == False:
+        try:
+            last_condition = self.find_element(By.XPATH, "//tbody[@id='conditions_sort_tbody']/tr[last()]/td[1]/a[2]")
+            last_condition.click()
+
+            name = options["name"] + f" {index}"
+            send_keys("rule_name", name)
+
+            self.implicitly_wait(5)
+            #Three Checkbox
+            click_element("for_fields_rights", options["for_fields_rights"])
+            click_element("for_workflow", options["for_workflow"])
+            click_element("for_sla", options["for_sla"])
+            # Account User Checkbox
+            checkbox_tick = f"//input[@value='{options['checkbox_name']}{index}']"
+            checkbox_value = f"//input[@value='{options['checkbox_name']}{index}']//ancestor::tr//td[3]//input[@type='checkbox']"
+            click_value_element(checkbox_tick, options["tick"])
+            click_value_element(checkbox_value, options["tick"])
+            #Status
+            click_element("status_checkbox", options["status"])
+            if (options["status"]):
+                status_checkbox = f"//input[@id='status_checkbox']//ancestor::tr//select[@class='form-control']/option[@value='{options['status_name']}']"
+                click_value_element(status_checkbox, options["tick"])
+        
+            # Save Edit
+            save_btn = self.find_element(By.NAME, "add_copy")
+            save_btn.click()
+            time.sleep(10)
+            self.implicitly_wait(10)
+            break
+
+        except Exception as e:
+            print(f'\033[91mAn error occurred: Create field, {options["name"]} {e}. Retrying...\033[0m')
+            play_alert_sound()
+            close_edit_field_modal(self)
             time.sleep(5)
 
 # HELPER METHODS
