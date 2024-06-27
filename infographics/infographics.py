@@ -27,6 +27,17 @@ class Infographics(webdriver.Chrome):
         el_password.send_keys(password)
         self.find_element(By.ID, "submit").click()
 
+    def checkout_form(self, json_data, form_id, count):
+        self.get(f"http://binpo.paybps.ovpn/intranet/infocapture/admin_summary_project.php?id={form_id}")
+        cont_btn = self.find_element(By.XPATH, "//a[contains(@name, 'edit_fields_link')]")
+        cont_btn.click()
+
+        datas = json.loads(json_data)
+
+        for i in range (1, int(count) + 1):
+            for data in datas:
+                create_field(self, data, i)
+
     def ob_class_b_pas(self):
         self.get(const.OB_CLASS_B)
         cont_btn = self.find_element(By.NAME, 'continue_edit_fields_link')
