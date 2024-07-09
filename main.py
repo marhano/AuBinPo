@@ -24,11 +24,33 @@ def checkout_form():
         return jsonify({'error': 'Selenium instance not initialized'}), 500
     
     data = request.get_json()
-    form_id = data.get('id')
+    request_data = data.get('request_data')
     json_data = data.get('json_data')
-    count = data.get('count')
-    bot.checkout_form(json_data=json_data, form_id=form_id, count=count)
+    bot.checkout_form(json_data=json_data, request_data=request_data)
     return jsonify({'message': 'Checkout Form completed'})
+
+@app.route('/ob-class-b-pas', methods=['POST'])
+def ob_class_b_pas():
+    global bot
+    if bot is None:
+        return jsonify({'error': 'Selenium instance not initialized'}), 500
+    
+    data = request.get_json()
+    request_data = data.get('request_data')
+    json_data = data.get('json_data')
+    bot.ob_class_b_pas(json_data=json_data, request_data=request_data)
+    return jsonify({'message': 'Run script completed.'})
+
+@app.route('/field-condition', method=['POST'])
+def field_condition():
+    global bot
+    if bot is None:
+        return jsonify({'error': 'Selenium instance not initialized'}), 500
+    
+    data = request.get_json()
+    request_data = data.get('request_data')
+    json_data = data.get('json_data')
+    return jsonify({'message': 'Run script completed.'})
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -13,7 +13,8 @@
     "input_size": 1,
     "field_label_css": false,
     "field_value_css": false,
-    "optional_hint": false
+    "optional_hint": false,
+    "default_value_input": false
   },
   {
     "name": "Branch Contact Person",
@@ -29,7 +30,8 @@
     "input_size": 1,
     "field_label_css": false,
     "field_value_css": false,
-    "optional_hint": false
+    "optional_hint": false,
+    "default_value_input": false
   },
   {
     "name": "Branch Contact Number",
@@ -45,7 +47,8 @@
     "input_size": 1,
     "field_label_css": false,
     "field_value_css": false,
-    "optional_hint": false
+    "optional_hint": false,
+    "default_value_input": false
   },
   {
     "name": "Branch Type",
@@ -83,7 +86,8 @@
     "input_size": 1,
     "field_label_css": false,
     "field_value_css": false,
-    "optional_hint": false
+    "optional_hint": false,
+    "default_value_input": false
   },
   {
     "name": "Branch URL",
@@ -99,7 +103,30 @@
     "input_size": 1,
     "field_label_css": false,
     "field_value_css": false,
-    "optional_hint": false
+    "optional_hint": false,
+    "default_value_input": false
+  },
+  {
+    "name": "Branch Conso",
+    "alt_name": false,
+    "input_type": "textfield",
+    "required": false,
+    "disabled": true,
+    "reload": false,
+    "separate_cells": false,
+    "label_above_input_field": true,
+    "group_with_next": false,
+    "label_size": 1,
+    "input_size": 1,
+    "field_label_css": false,
+    "field_value_css": false,
+    "optional_hint": false,
+    "default_value_input": [
+      "$branch_name",
+      "@branch_type",
+      "$branch_address",
+      "$branch_url"
+    ]
   },
   [
     {
@@ -139,7 +166,8 @@
       "input_size": 1,
       "field_label_css": false,
       "field_value_css": false,
-      "optional_hint": false
+      "optional_hint": false,
+      "default_value_input": false
     },
     {
       "name": "Location Address",
@@ -155,7 +183,8 @@
       "input_size": 1,
       "field_label_css": false,
       "field_value_css": false,
-      "optional_hint": false
+      "optional_hint": false,
+      "default_value_input": false
     },
     {
       "name": "Location URL",
@@ -171,9 +200,31 @@
       "input_size": 1,
       "field_label_css": false,
       "field_value_css": false,
-      "optional_hint": false
+      "optional_hint": false,
+      "default_value_input": false
     },
-    
+    {
+      "name": "Terminal Conso",
+      "alt_name": false,
+      "input_type": "textfield",
+      "required": false,
+      "disabled": true,
+      "reload": false,
+      "separate_cells": false,
+      "label_above_input_field": true,
+      "group_with_next": false,
+      "label_size": 1,
+      "input_size": 1,
+      "field_label_css": false,
+      "field_value_css": false,
+      "optional_hint": false,
+      "default_value_input": [
+        "@terminal_category",
+        "$device_serial_number",
+        "$location_address",
+        "$location_url"
+      ]
+    },
     [
       {
         "name": "Payment Partner",
@@ -276,7 +327,8 @@
         "input_size": 1,
         "field_label_css": false,
         "field_value_css": false,
-        "optional_hint": "Please specify Others"
+        "optional_hint": "Please specify Others",
+        "default_value_input": false
       },
       {
         "name": "Payment Terminal Currency Others",
@@ -292,7 +344,8 @@
         "input_size": 1,
         "field_label_css": false,
         "field_value_css": false,
-        "optional_hint": "Please specify Others"
+        "optional_hint": "Please specify sOthers",
+        "default_value_input": false
       },
       {
         "name": "Preferred Payment Terminal Type Others",
@@ -308,8 +361,31 @@
         "input_size": 1,
         "field_label_css": false,
         "field_value_css": false,
-        "optional_hint": "Please specify Others"
+        "optional_hint": "Please specify Others",
+        "default_value_input": false
+      },
+      {
+        "name": "Payment Conso",
+        "alt_name": false,
+        "input_type": "textfield",
+        "required": false,
+        "disabled": true,
+        "reload": false,
+        "separate_cells": false,
+        "label_above_input_field": true,
+        "group_with_next": false,
+        "label_size": 1,
+        "input_size": 1,
+        "field_label_css": false,
+        "field_value_css": false,
+        "optional_hint": false,
+        "default_value_input": [
+          "@payment_partner,$pt_others",
+          "@preferred_pt_type,$preferred_pt_type_others",
+          "@pt_sub_type"
+        ]
       }
     ]
   ]
+  
 ]

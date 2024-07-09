@@ -27,29 +27,38 @@ class Infographics(webdriver.Chrome):
         el_password.send_keys(password)
         self.find_element(By.ID, "submit").click()
 
-    def checkout_form(self, json_data, form_id, count):
+    def checkout_form(self, json_data, request_data):
+        request_data_json = json.loads(request_data)
+        form_id = request_data_json['id']
+        count = request_data_json['count']
+        datas = json.loads(json_data)
+
         self.get(f"http://binpo.paybps.ovpn/intranet/infocapture/admin_summary_project.php?id={form_id}")
         cont_btn = self.find_element(By.XPATH, "//a[contains(@name, 'edit_fields_link')]")
         cont_btn.click()
-
-        datas = json.loads(json_data)
 
         for i in range (1, int(count) + 1):
             for data in datas:
                 create_field(self, data, i)
 
-    def ob_class_b_pas(self):
-        self.get(const.OB_CLASS_B)
-        cont_btn = self.find_element(By.NAME, 'continue_edit_fields_link')
-        cont_btn.click()
+    def field_condition(self, json_data, request_data):
+        pass
 
-        data = read_json(const.JSON_PATH_OBPAS)
+    def ob_class_b_pas(self, json_data, request_data):
+        request_data_json = json.loads(request_data)
+        const.FORM_ID = request_data_json['id']
+        self.LAST_FIELD_POS = int(request_data_json['init_pos'])
+        datas = json.loads(json_data)
+
+        self.get(f"http://binpo.paybps.ovpn/intranet/infocapture/admin_summary_project.php?id={const.FORM_ID}")
+        cont_btn = self.find_element(By.XPATH, "//a[contains(@name, 'edit_fields_link')]")
+        cont_btn.click()
 
         terminalIDs = ['A', 'B', 'C', 'D', 'E', 'F']
         paymentTerminalIDs = ['1', '2', '3', '4', '5', '6']
-        BRANCH = 2
-        TERMINAL = 2
-        PAYMENT_TERMINAL = 2
+        BRANCH = 5
+        TERMINAL = 3
+        PAYMENT_TERMINAL = 3
 
         checkbox_data = {
             "name": "Terminal",
@@ -68,15 +77,17 @@ class Infographics(webdriver.Chrome):
             "optional_hint": False
         }
 
-        create_field(self, {"input_type": "label", "name": "Branch 3", "optional_hint": False, "field_label_css": False, "label_size": 1, "group_with_next": False })
+
+        create_field(self, {"input_type": "label", "name": "Branch 1", "optional_hint": False, "field_label_css": False, "field_value_css": False, "label_size": 1, "input_size": False, "group_with_next": False })
         for i in range(1, BRANCH + 1):
 
             create_section(self, {"name": "Branch", "visible_header": False, "field_label_css": "main_branch" }, i)
-            for branch in data:
+            for branch in datas:
 
                 if isinstance(branch, list):
 
                     for j, terminalID in enumerate(terminalIDs[:TERMINAL]):
+                        print(f'  Terminal {i}{terminalID}')
                         create_section(self, {"name": "Terminal", "visible_header": False, "field_label_css": "terminal_section" }, f"{i}{terminalID}")
                         checkbox_data['name'] = "Terminal"
                         create_field(self, checkbox_data, f"{i}{terminalID}")
@@ -84,6 +95,7 @@ class Infographics(webdriver.Chrome):
                         for terminal in branch:
 
                             if isinstance(terminal, list):
+                                print(f'    Payment Terminal {i}{terminalID}')
                                 create_section(self, {"name": "Payment Terminal", "visible_header": False, "field_label_css": "payment_terminal_section" }, f"{i}{terminalID}")
 
                                 for k, paymentTerminalID in enumerate(paymentTerminalIDs[:PAYMENT_TERMINAL]):
@@ -91,15 +103,21 @@ class Infographics(webdriver.Chrome):
                                     create_field(self, checkbox_data, f"{i}{terminalID}{paymentTerminalID}")
 
                                     for paymentTerminal in terminal:
+                                        print('    '+'\033[92m'+paymentTerminal["name"]+'\033[0m')
                                         create_field(self, paymentTerminal, f"{i}{terminalID}{paymentTerminalID}")
                                         if paymentTerminal['name'] != "Payment Partner":
                                             edit_field(self, paymentTerminal, f"{i}{terminalID}{paymentTerminalID}")
-                                if (j + 1) == TERMINAL & i != BRANCH:
+                                    
+                                create_field(self, {"input_type": "notice", "name": f"PT Notice {i}{terminalID}", "field_label_css": False, "field_value_css": False, "label_size": False, "input_size": 1, "group_with_next": False, "optional_hint": False })
+                                if (j + 1) == TERMINAL and i != BRANCH:
+                                    print(f"\033[94m    Branch {i + 1} checkbox\033[0m")
                                     checkbox_data['name'] = "Branch"
                                     create_field(self, checkbox_data, f"{str(i + 1)}")
                             else:
+                                print('\033[96m'+'  '+terminal["name"]+'\033[0m')
                                 create_field(self, terminal, f"{i}{terminalID}")
                 else:
+                    print(f"\033[94m{branch['name']}\033[0m")
                     create_field(self, branch, i)
 
     def ob_class_b_asi(self):
@@ -138,6 +156,8 @@ def create_field(self, options, _index=None):
         return
     
     def send_keys(id, option, index=None):
+        if not option:
+            return
         form_field = self.find_element(By.ID, id)
         if option:
             form_field.clear()
@@ -151,6 +171,8 @@ def create_field(self, options, _index=None):
             form_field.clear()
     
     def click_element(id, option):
+        if not option:
+            return
         form_field = self.find_element(By.ID, id)
     
         if form_field.is_selected() != option:
@@ -180,12 +202,19 @@ def create_field(self, options, _index=None):
                 send_keys("field_label", name, _index)
             else:
                 send_keys("field_label", name)
+
             send_keys("field_description", options['optional_hint'])
 
-            if options['input_type'] != "label":
+            if options['input_type'] != "label" and options['input_type'] != "notice":
                 click_element("field_required", options['required'])
                 click_element("field_disabled", options['disabled'])
                 click_element("field_dynamic", options['reload'])
+
+            if options['input_type'] == "textfield":
+                if options['default_value_input']:
+                    default_value_element = self.find_element(By.ID, "default_value")
+                    default_value_element.clear()
+                    default_value_element.send_keys(default_value_concat(options['default_value_input'], str(_index).lower()))
 
             if options['input_type'] == "select" or options['input_type'] == "multiple_checkboxes":
                 actions = ActionChains(self)
@@ -203,12 +232,13 @@ def create_field(self, options, _index=None):
             change_field_position(self)
 
             send_keys("field_style", options['field_label_css'])
+            send_keys("field_style2", options['field_value_css'])
             send_keys("field_title_size", options['label_size'])
+            send_keys("field_field_size", options['input_size'])
             click_element("field_group_cells", options['group_with_next'])
+            
 
-            if options['input_type'] != "label":
-                send_keys("field_style2", options['field_value_css'])
-                send_keys("field_field_size", options['input_size'])
+            if options['input_type'] != "label" and options['input_type'] != "notice":
                 click_element("field_two_cells", options['separate_cells'])
                 click_element("field_on_top", options['label_above_input_field'])
             
@@ -298,9 +328,9 @@ def edit_field(self, option, _index=None, custom=None):
             self.implicitly_wait(5)
 
             if option["alt_name"]:
-                element_id = f'_115__field_{convert_to_id(option["alt_name"])}'
+                element_id = f'_{const.FORM_ID}__field_{convert_to_id(option["alt_name"])}'
             else:
-                element_id = f'_115__field_{convert_to_id(option["name"])}'
+                element_id = f'_{const.FORM_ID}__field_{convert_to_id(option["name"])}'
 
             if _index:
                 element_id += f'_{convert_to_id(str(_index))}'
@@ -376,3 +406,20 @@ def close_edit_field_modal(self):
         close_button.click()
     except Exception as e:
         print(f"Error closing modal: {e}")
+
+def default_value_concat(field_id_arr, index):
+    placeholders = []
+
+    for field_id in field_id_arr:
+        mult_id = field_id.split(',')
+
+        # Create a list to hold formatted placeholders for the current field group
+        formatted_placeholders = [f'{id}_{index}' for id in mult_id]
+
+        # Join formatted placeholders with ", " as separator
+        placeholders.append(', '.join(formatted_placeholders))
+
+    # Join all placeholders with " | " as separator
+    concat_string = '{#concat(' + ', " | ", '.join(placeholders) + ')}'
+    
+    return concat_string
