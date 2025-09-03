@@ -7,6 +7,6 @@ JSON_PATH_OBAU = "app_data/omnibiz_class_b_account_user.json"
 # initial position of the field ex. 255, use False if its at the very bottom
 INIT_POS = False
 # enable the logic for field creation
-SWITCH = False
+SWITCH = True
 # enable sound effect for error
-ERROR_ALERT = True
+ERROR_ALERT = False

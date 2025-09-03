@@ -41,7 +41,7 @@ def ob_class_b_pas():
     bot.ob_class_b_pas(json_data=json_data, request_data=request_data)
     return jsonify({'message': 'Run script completed.'})
 
-@app.route('/field-condition', method=['POST'])
+@app.route('/field-condition', methods=['POST'])
 def field_condition():
     global bot
     if bot is None:
@@ -50,6 +50,7 @@ def field_condition():
     data = request.get_json()
     request_data = data.get('request_data')
     json_data = data.get('json_data')
+    bot.field_condition(json_data=json_data, request_data=request_data)
     return jsonify({'message': 'Run script completed.'})
 
 if __name__ == "__main__":

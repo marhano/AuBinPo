@@ -42,7 +42,16 @@ class Infographics(webdriver.Chrome):
                 create_field(self, data, i)
 
     def field_condition(self, json_data, request_data):
-        pass
+        request_data_json = json.loads(request_data)
+        form_id = request_data_json['id']
+        count = request_data_json['count']
+        datas = json.loads(json_data)
+
+        self.get(f"http://binpo.paybps.ovpn/intranet/panels/helpdesk_edit_rules.php?id={form_id}")
+
+        for i in range (1, int(count) + 1):
+            for data in datas:
+                create_condition(self, data, i)
 
     def ob_class_b_pas(self, json_data, request_data):
         request_data_json = json.loads(request_data)
@@ -149,6 +158,66 @@ class Infographics(webdriver.Chrome):
                 create_field(self, account, i)
                 if account['name'] == "Full Name Authorize":
                     edit_field(self, accounts, i, "list")
+
+def create_condition(self, options, _index=None):
+    if const.SWITCH == False:
+        return
+    
+    def click_element(id, option):
+        if not option:
+            return
+        form_field = self.find_element(By.ID, id)
+    
+        if form_field.is_selected() != option:
+            form_field.click()
+
+    attempts = False
+    
+    while attempts == False:
+        try:
+            add_btn = self.find_element(By.NAME, "add_rule_link")
+            add_btn.click()
+
+            rule_name = self.find_element(By.ID, "rule_name")
+            rule_name.clear();
+            rule_name.send_keys(f'{options["name"]} {_index}')
+
+            click_element("for_fields_rights", options["fields_rights"])
+            click_element("for_workflow", options["workflow"])
+            click_element("for_sla", options["sla"])
+
+            for condition in options["field_condition"]:
+                print(condition["field_name"])
+                condition_name = self.find_element(By.XPATH, f'//input[@value="{condition["field_name"]}"]')
+                condition_name.click()
+
+                condition_value = condition_name.find_element(By.XPATH, f"ancestor::tr/td[3]")
+
+                if condition["equals"]:
+                    checkbox = condition_value.find_element(By.XPATH, f"//input[contains(@id,'equal_checkbox')]")
+                    checkbox.click()
+                    print("checkbox clicked")
+
+                    input = condition_value.find_element(By.XPATH, f"//input[contains(@id,'input_equal')]")
+                    input.clear()
+                    input.send_keys(condition["equals_input"])
+                    print("send keys")
+            
+            click_element("being_reported_checkbox", options["ticked_submitted"])
+            click_element("for_trigger", options["create_trigger"])
+
+            add_rule = self.find_element(By.NAME, "add_rule")
+            add_rule.click()
+
+            attempts = True
+
+            break
+
+
+        except Exception as e:
+            print(f'\033[91mAn error occurred: Create condition, {options["name"]} {e}. Retrying...\033[0m')
+            play_alert_sound()
+            time.sleep(5)
 
 # tested on(textfield, select, label, checkbox, multiple_checkbox)
 def create_field(self, options, _index=None):
